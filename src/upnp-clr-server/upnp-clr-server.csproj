@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <RootNamespace>AmberSystems.UPnP</RootNamespace>
+    <Description />
+    <Version>0.0.1</Version>
+    <Authors>Denis Rozhkov &lt;denis@rozhkoff.com&gt;</Authors>
+    <Company />
+    <Product>UPnP/CLR Server</Product>
+    <Copyright>2016 Denis Rozhkov &lt;denis@rozhkoff.com&gt;</Copyright>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\upnp-clr-core\upnp-clr-core.csproj" />
+  </ItemGroup>
+
+</Project>

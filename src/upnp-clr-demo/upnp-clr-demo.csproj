@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Copyright>2016 Denis Rozhkov &lt;denis@rozhkoff.com&gt;</Copyright>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <AssemblyName>upnp-clr-demo</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <PackageId>upnp-clr-demo</PackageId>
+    <RootNamespace>AmberSystems.UPnP.Demo</RootNamespace>
+    <Description />
+    <Authors>Denis Rozhkov &lt;denis@rozhkoff.com&gt;</Authors>
+    <AssemblyVersion>0.0.1.0</AssemblyVersion>
+    <FileVersion>0.0.1.0</FileVersion>
+    <Company />
+    <Product>UPnP/CLR Demo</Product>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\upnp-clr-client\upnp-clr-client.csproj" />
+  </ItemGroup>
+
+</Project>

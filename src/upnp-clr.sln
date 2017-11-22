@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.9
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "upnp-clr-client", "upnp-clr-client\upnp-clr-client.csproj", "{AA9F5F7E-7922-46B3-8E2F-B907AE4A99E3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "upnp-clr-demo", "upnp-clr-demo\upnp-clr-demo.csproj", "{4B0F83B1-0C38-470D-BC55-C25ECE596111}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "upnp-clr-core", "upnp-clr-core\upnp-clr-core.csproj", "{C8B9AA34-7EF5-4164-9CEF-AF516B7D5492}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "z-upnp-clr-test", "z-upnp-clr-test\z-upnp-clr-test.csproj", "{481DF619-C9D2-40B4-85B7-C071D90567B7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "upnp-clr-server", "upnp-clr-server\upnp-clr-server.csproj", "{3E9259C7-1453-4B06-A629-311B8F5B3FDF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AA9F5F7E-7922-46B3-8E2F-B907AE4A99E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA9F5F7E-7922-46B3-8E2F-B907AE4A99E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA9F5F7E-7922-46B3-8E2F-B907AE4A99E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA9F5F7E-7922-46B3-8E2F-B907AE4A99E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B0F83B1-0C38-470D-BC55-C25ECE596111}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B0F83B1-0C38-470D-BC55-C25ECE596111}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B0F83B1-0C38-470D-BC55-C25ECE596111}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B0F83B1-0C38-470D-BC55-C25ECE596111}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8B9AA34-7EF5-4164-9CEF-AF516B7D5492}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8B9AA34-7EF5-4164-9CEF-AF516B7D5492}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8B9AA34-7EF5-4164-9CEF-AF516B7D5492}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8B9AA34-7EF5-4164-9CEF-AF516B7D5492}.Release|Any CPU.Build.0 = Release|Any CPU
+		{481DF619-C9D2-40B4-85B7-C071D90567B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{481DF619-C9D2-40B4-85B7-C071D90567B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{481DF619-C9D2-40B4-85B7-C071D90567B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{481DF619-C9D2-40B4-85B7-C071D90567B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E9259C7-1453-4B06-A629-311B8F5B3FDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E9259C7-1453-4B06-A629-311B8F5B3FDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E9259C7-1453-4B06-A629-311B8F5B3FDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E9259C7-1453-4B06-A629-311B8F5B3FDF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,12 @@
+src/.vs
+src/packages
+src/upnp-clr-client/bin
+src/upnp-clr-client/obj
+src/upnp-clr-core/bin
+src/upnp-clr-core/obj
+src/upnp-clr-demo/bin
+src/upnp-clr-demo/obj
+src/upnp-clr-server/obj
+src/upnp-clr-server/bin
+src/z-upnp-clr-test/obj
+src/z-upnp-clr-test/bin
