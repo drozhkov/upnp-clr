@@ -17,6 +17,7 @@
  */
 
 using System;
+using System.Xml.Serialization;
 
 namespace AmberSystems.UPnP.Core.Types
 {
@@ -31,7 +32,8 @@ namespace AmberSystems.UPnP.Core.Types
 		WanDevice
 	}
 
-	public class Device : Target
+	[XmlRoot( "device" )]
+	public sealed class Device : Target
 	{
 		class DeviceString
 		{
@@ -40,12 +42,31 @@ namespace AmberSystems.UPnP.Core.Types
 			public const string WanDevice = "WANDevice";
 		}
 
-		public new DeviceType Type { get; protected set; }
+		[XmlElement( ElementName = "deviceType" )]
+		public string TypeName
+		{
+			get { return ToString(); }
+			set { Parse( value, this ); }
+		}
 
-		public Guid Uuid { get; protected set; }
-		public string VendorDeviceType { get; protected set; }
+		[XmlArray( ElementName = "serviceList" )]
+		[XmlArrayItem( ElementName = "service" )]
+		public Service[] ServiceList { get; set; }
 
-		public Device( DeviceType type, Guid? uuid )
+		[XmlArray( ElementName = "deviceList" )]
+		[XmlArrayItem( ElementName = "device" )]
+		public Device[] DeviceList { get; set; }
+
+		[XmlIgnore]
+		public new DeviceType Type { get; private set; }
+
+		[XmlIgnore]
+		public Guid Uuid { get; private set; }
+		[XmlIgnore]
+		public string VendorDeviceType { get; private set; }
+
+
+		protected override void Init( DeviceType type, Guid? uuid )
 		{
 			this.Type = type;
 
@@ -59,6 +80,35 @@ namespace AmberSystems.UPnP.Core.Types
 			}
 		}
 
+		protected override void Init( string domainName, string typeName, int version )
+		{
+			if (domainName != String.UpnpDomain)
+			{
+				this.Type = DeviceType.Vendor;
+				this.VendorDomainName = domainName;
+				this.VendorDeviceType = typeName;
+
+				base.Type = TargetType.VendorDevice;
+			}
+			else
+			{
+				this.Type = ToType( typeName );
+
+				base.Type = TargetType.Device;
+			}
+
+			this.Version = version;
+		}
+
+		public Device()
+		{
+		}
+
+		public Device( DeviceType type, Guid? uuid )
+		{
+			Init( type, uuid );
+		}
+
 		public Device( DeviceType type )
 			: this( type, null )
 		{
@@ -66,22 +116,7 @@ namespace AmberSystems.UPnP.Core.Types
 
 		public Device( string domainName, string deviceType, int version )
 		{
-			if (domainName != String.UpnpDomain)
-			{
-				this.Type = DeviceType.Vendor;
-				this.VendorDomainName = domainName;
-				this.VendorDeviceType = deviceType;
-
-				base.Type = TargetType.VendorDevice;
-			}
-			else
-			{
-				this.Type = ToType( deviceType );
-
-				base.Type = TargetType.Device;
-			}
-
-			this.Version = version;
+			Init( domainName, deviceType, version );
 		}
 
 		public static DeviceType ToType( string s )

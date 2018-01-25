@@ -2,14 +2,14 @@
 
   <PropertyGroup>
     <Copyright>2016 Denis Rozhkov &lt;denis@rozhkoff.com&gt;</Copyright>
-    <VersionPrefix>0.0.1</VersionPrefix>
+    <VersionPrefix>0.0.2</VersionPrefix>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <AssemblyName>upnp-clr-core</AssemblyName>
     <PackageId>upnp-clr-core</PackageId>
     <RootNamespace>AmberSystems.UPnP.Core</RootNamespace>
     <Authors>Denis Rozhkov &lt;denis@rozhkoff.com&gt;</Authors>
     <Description />
-    <AssemblyVersion>0.0.1.0</AssemblyVersion>
+    <AssemblyVersion>0.0.2</AssemblyVersion>
     <Company />
     <Product>UPnP/CLR Core</Product>
   </PropertyGroup>

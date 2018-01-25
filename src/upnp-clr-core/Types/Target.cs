@@ -17,6 +17,10 @@
  */
 
 using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Xml.Serialization;
+
 using AmberSystems.UPnP.Core.Exceptions;
 
 namespace AmberSystems.UPnP.Core.Types
@@ -46,10 +50,14 @@ namespace AmberSystems.UPnP.Core.Types
 			public const string Service = "service";
 		}
 
+		[XmlIgnore]
 		public TargetType Type { get; protected set; }
 
+		[XmlIgnore]
 		public string VendorDomainName { get; protected set; }
+		[XmlIgnore]
 		public int Version { get; protected set; }
+
 
 		protected Target()
 		{
@@ -60,10 +68,22 @@ namespace AmberSystems.UPnP.Core.Types
 			this.Type = type;
 		}
 
-		// TODO: refactor
-		public static Target Parse( string s )
+		protected virtual void Init( TargetType type )
 		{
-			Target result = null;
+		}
+
+		protected virtual void Init( DeviceType type, Guid? uuid )
+		{
+		}
+
+		protected virtual void Init( string domainName, string typeName, int version )
+		{
+		}
+
+		// TODO: refactor
+		public static Target Parse( string s, Target r = null )
+		{
+			Target result = r;
 
 			var tokens = s.Split( ':' );
 
@@ -76,7 +96,12 @@ namespace AmberSystems.UPnP.Core.Types
 			{
 				if (tokens[0] == String.DeviceId)
 				{
-					result = new Device( DeviceType.Id, Guid.Parse( tokens[1] ) );
+					if (result == null)
+					{
+						result = new Device();
+					}
+
+					result.Init( DeviceType.Id, Guid.Parse( tokens[1] ) );
 				}
 				else
 				{
@@ -100,11 +125,21 @@ namespace AmberSystems.UPnP.Core.Types
 
 				if (tokens[2] == String.Device)
 				{
-					result = new Device( tokens[1], tokens[3], version );
+					if (result == null)
+					{
+						result = new Device();
+					}
+
+					result.Init( tokens[1], tokens[3], version );
 				}
 				else if (tokens[2] == String.Service)
 				{
-					result = new Service( tokens[1], tokens[3], version );
+					if (result == null)
+					{
+						result = new Service();
+					}
+
+					result.Init( tokens[1], tokens[3], version );
 				}
 				else
 				{
@@ -117,6 +152,17 @@ namespace AmberSystems.UPnP.Core.Types
 			}
 
 			return result;
+		}
+
+		public virtual async Task<T> GetDescription<T>( Uri location ) where T : class
+		{
+			using (var httpClient = new HttpClient())
+			{
+				var response = await httpClient.GetAsync( location );
+				var responseContent = await response.Content.ReadAsStringAsync();
+
+				return Serializable.Deserialize<T>( responseContent );
+			}
 		}
 
 		public override string ToString()

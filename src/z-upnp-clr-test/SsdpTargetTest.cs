@@ -17,15 +17,16 @@
  */
 
 using AmberSystems.UPnP.Core.Types;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace AmberSystems.UPnP.Test
 {
 	[TestClass]
-	public class TypeTargetTest
+	public class SsdpTargetTest
 	{
 		[TestMethod]
-		public void TestTargetParse()
+		public void SsdpTargetParse()
 		{
 			var target1 = Target.Parse( "urn:schemas-upnp-org:device:InternetGatewayDevice:1" );
 			Assert.AreEqual( TargetType.Device, target1.Type );

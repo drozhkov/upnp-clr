@@ -17,6 +17,7 @@
  */
 
 using System;
+using System.Linq;
 
 namespace AmberSystems.UPnP.Demo
 {
@@ -29,23 +30,28 @@ namespace AmberSystems.UPnP.Demo
 				var client = new UpnpClient();
 				var result = client.Discover( Core.Types.TargetType.All ).Result;
 
-				foreach (var @interface in result)
+				foreach (var @interface in result.GetInterfaces())
 				{
-					Console.WriteLine( $"--- interface: {@interface.Key}" );
+					Console.WriteLine( $"interface: {@interface}" );
 
-					foreach (var type in @interface.Value)
+					foreach (var type in result.GetTargetTypes( @interface ))
 					{
-						Console.WriteLine( $"-- type: {type.Key}" );
+						Console.WriteLine( $"- type: {type}" );
 
-						foreach (var target in type.Value)
+						foreach (var target in result.GetTargets( @interface, type ))
 						{
-							Console.WriteLine( $"- target: {target.Value.Target}" );
-							Console.WriteLine( $"location: {target.Value.Location}" );
+							Console.WriteLine( $"-- target: {target.Target}" );
+							Console.WriteLine( $"--- location: {target.Location}" );
 
 							Console.WriteLine();
 						}
 					}
 				}
+
+				var extAddrList = client.GetExternalAddressList().Result;
+				Console.WriteLine( $"external address(es): {extAddrList.Aggregate( ( a, b ) => a + ", " + b )}" );
+
+				//client.AddPortMapping( 80, 81 ).Wait();
 			}
 			catch (Exception x)
 			{
@@ -53,6 +59,8 @@ namespace AmberSystems.UPnP.Demo
 			}
 			finally
 			{
+				Console.WriteLine( "press any key..." );
+				Console.ReadKey( true );
 			}
 		}
 	}

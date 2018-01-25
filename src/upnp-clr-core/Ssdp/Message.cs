@@ -18,6 +18,7 @@
 
 using System;
 using System.Net;
+
 using AmberSystems.UPnP.Core.Exceptions;
 using AmberSystems.UPnP.Core.Types;
 
@@ -50,7 +51,7 @@ namespace AmberSystems.UPnP.Core.Ssdp
 			this.Host = EndPoint.SiteLocal;
 		}
 
-		public static Message Parse( byte[] data, IPEndPoint sourceAddress )
+		public static Message Parse( byte[] data, IPEndPoint sourceAddress, IPAddress localAddress )
 		{
 			Message result = null;
 
@@ -59,6 +60,7 @@ namespace AmberSystems.UPnP.Core.Ssdp
 			if (httpMessage.ResponseCode != 0)
 			{
 				result = new Message( MessageType.Response );
+				result.LocalAddress = localAddress;
 				result.Host = sourceAddress;
 				result.Target = Target.Parse( httpMessage.GetHeaderValue( Net.Http.Header.Name.St ) );
 				result.Location = new Uri( httpMessage.GetHeaderValue( Net.Http.Header.Name.Location ) );

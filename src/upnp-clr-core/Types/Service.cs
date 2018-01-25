@@ -17,6 +17,7 @@
  */
 
 using System;
+using System.Xml.Serialization;
 
 namespace AmberSystems.UPnP.Core.Types
 {
@@ -30,7 +31,8 @@ namespace AmberSystems.UPnP.Core.Types
 		WanIpConnection
 	}
 
-	public class Service : Target
+	[XmlRoot( "service" )]
+	public sealed class Service : Target
 	{
 		class ServiceString
 		{
@@ -39,28 +41,56 @@ namespace AmberSystems.UPnP.Core.Types
 			public const string WanIpConnection = "WANIPConnection";
 		}
 
-		public new ServiceType Type { get; protected set; }
+		[XmlElement( ElementName = "serviceType" )]
+		public string TypeName
+		{
+			get { return ToString(); }
+			set { Parse( value, this ); }
+		}
 
-		public string VendorServiceType { get; protected set; }
+		[XmlElement( ElementName = "SCPDURL" )]
+		public string ScpdUrl { get; set; }
 
-		public Service( string domainName, string serviceType, int version )
+		[XmlElement( ElementName = "controlURL" )]
+		public string ControlUrl { get; set; }
+
+		[XmlElement( ElementName = "eventSubURL" )]
+		public string EventUrl { get; set; }
+
+		[XmlIgnore]
+		public new ServiceType Type { get; private set; }
+
+		[XmlIgnore]
+		public string VendorServiceType { get; private set; }
+
+
+		protected override void Init( string domainName, string typeName, int version )
 		{
 			if (domainName != String.UpnpDomain)
 			{
 				this.Type = ServiceType.Vendor;
 				this.VendorDomainName = domainName;
-				this.VendorServiceType = serviceType;
+				this.VendorServiceType = typeName;
 
 				base.Type = TargetType.VendorService;
 			}
 			else
 			{
-				this.Type = ToType( serviceType );
+				this.Type = ToType( typeName );
 
 				base.Type = TargetType.Service;
 			}
 
 			this.Version = version;
+		}
+
+		public Service()
+		{
+		}
+
+		public Service( string domainName, string serviceType, int version )
+		{
+			Init( domainName, serviceType, version );
 		}
 
 		public static ServiceType ToType( string s )

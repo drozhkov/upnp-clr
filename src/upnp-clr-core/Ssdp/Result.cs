@@ -18,21 +18,37 @@
 
 using System;
 using System.Net;
+using System.Threading.Tasks;
+
 using AmberSystems.UPnP.Core.Types;
 
 namespace AmberSystems.UPnP.Core.Ssdp
 {
 	public class Result
 	{
+		public IPAddress LocalAddress { get; protected set; }
+
 		public IPEndPoint Host { get; protected set; }
 		public Target Target { get; protected set; }
 
 		public Uri Location { get; protected set; }
 
+		protected Serializable m_description;
+
 
 		public string Key()
 		{
-			return $"{Host}_{Target}_{Location}";
+			return $"{Host.Address}_{Target}_{Location}";
+		}
+
+		public async Task<T> GetDescription<T>() where T : Serializable
+		{
+			if (m_description == null)
+			{
+				m_description = await this.Target.GetDescription<T>( this.Location );
+			}
+
+			return (m_description as T);
 		}
 	}
 }

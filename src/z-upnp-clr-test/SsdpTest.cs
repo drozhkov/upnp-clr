@@ -17,9 +17,12 @@
  */
 
 using System;
+using System.Net;
 using System.Text;
+
 using AmberSystems.UPnP.Core.Exceptions;
 using AmberSystems.UPnP.Core.Ssdp;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace AmberSystems.UPnP.Test
@@ -28,7 +31,7 @@ namespace AmberSystems.UPnP.Test
 	public class SsdpTest
 	{
 		[TestMethod]
-		public void TestMessageCreate()
+		public void SsdpMessageCreate()
 		{
 			var msg = new Message( MessageType.Search );
 
@@ -48,7 +51,7 @@ namespace AmberSystems.UPnP.Test
 		}
 
 		[TestMethod]
-		public void TestMessageParse()
+		public void SsdpMessageParse()
 		{
 			var response =
 @"HTTP/1.1 200 OK
@@ -65,7 +68,7 @@ CONFIGID.UPNP.ORG: 1337
 
 ";
 
-			var result = Message.Parse( Encoding.ASCII.GetBytes( response ), new System.Net.IPEndPoint( 1, 0 ) );
+			var result = Message.Parse( Encoding.ASCII.GetBytes( response ), new System.Net.IPEndPoint( 1, 0 ), IPAddress.Any );
 			Assert.AreEqual( Core.Types.TargetType.Device, result.Target.Type );
 			Assert.AreEqual( "http://192.168.0.1:53538/rootDesc.xml", result.Location.ToString() );
 		}
