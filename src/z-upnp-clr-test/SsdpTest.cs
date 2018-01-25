@@ -35,7 +35,7 @@ namespace AmberSystems.UPnP.Test
 		{
 			var msg = new Message( MessageType.Search );
 
-			Assert.ThrowsException<BadMxUpnpException>( () =>
+			Assert.ThrowsException<BadMxUpnpClrException>( () =>
 			{
 				var b = msg.ToByteArray();
 			} );

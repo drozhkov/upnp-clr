@@ -20,31 +20,51 @@ using System;
 
 namespace AmberSystems.UPnP.Core.Exceptions
 {
-	public class UpnpException : Exception
+	public class UpnpClrException : Exception
 	{
-		public UpnpException()
+		public UpnpClrException()
 		{
 		}
 
-		public UpnpException( string message )
+		public UpnpClrException( string message )
 			: base( message )
 		{
 		}
 	}
 
-	public class ArgumentUpnpException : UpnpException
+	public class ArgumentUpnpClrException : UpnpClrException
 	{
 	}
 
-	public class BadMxUpnpException : UpnpException
+	public class BadMxUpnpClrException : UpnpClrException
 	{
 	}
 
-	public class FormatUpnpException : UpnpException
+	public class FormatUpnpClrException : UpnpClrException
 	{
-		public FormatUpnpException( string message )
+		public FormatUpnpClrException( string message )
 			: base( message )
 		{
+		}
+	}
+
+	public class ServiceFaultUpnpClrException : UpnpClrException
+	{
+		public ServiceFaultUpnpClrException( string message )
+			: base( message )
+		{
+		}
+	}
+
+	public class ServiceErrorUpnpClrException : ServiceFaultUpnpClrException
+	{
+		public int ErrorCode { get; protected set; }
+
+
+		public ServiceErrorUpnpClrException( int errorCode )
+			: base( errorCode.ToString() )
+		{
+			this.ErrorCode = errorCode;
 		}
 	}
 }

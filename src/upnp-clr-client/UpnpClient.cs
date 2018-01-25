@@ -148,7 +148,7 @@ namespace AmberSystems.UPnP
 
 			if (m_discoveryResult.IsEmpty)
 			{
-				throw new UpnpException();
+				throw new UpnpClrException();
 			}
 
 			var devices = m_discoveryResult.GetResults( TargetType.Device ).Where( a => a.Target is Device && ((Device)a.Target).Type == deviceType );
@@ -180,6 +180,21 @@ namespace AmberSystems.UPnP
 			return result;
 		}
 
+		public async Task<List<Core.Services.WanIpConnectionClient.PortMapping>> GetGenericPortMappingEntry( int index )
+		{
+			List<Core.Services.WanIpConnectionClient.PortMapping> result = new List<Core.Services.WanIpConnectionClient.PortMapping>();
+
+			await ExecuteService( DeviceType.InternetGatewayDevice, ServiceType.WanIpConnection, async ( a, b ) =>
+			{
+				using (var serviceClient = new Core.Services.WanIpConnectionClient( a.Location.ToString(), b.ControlUrl, b.TypeName ))
+				{
+					result.Add( await serviceClient.GetGenericPortMappingEntry( index ) );
+				}
+			} );
+
+			return result;
+		}
+
 		public async Task AddPortMapping(
 				int internalPort, int externalPort,
 				string internalHost = null, ProtocolType protocol = ProtocolType.Tcp,
@@ -188,8 +203,6 @@ namespace AmberSystems.UPnP
 				bool isEnabled = true,
 				string remoteHost = "" )
 		{
-			List<string> result = new List<string>();
-
 			await ExecuteService( DeviceType.InternetGatewayDevice, ServiceType.WanIpConnection, async ( a, b ) =>
 			{
 				if (string.IsNullOrEmpty( internalHost ))
@@ -200,6 +213,20 @@ namespace AmberSystems.UPnP
 				using (var serviceClient = new Core.Services.WanIpConnectionClient( a.Location.ToString(), b.ControlUrl, b.TypeName ))
 				{
 					await serviceClient.AddPortMapping( internalHost, internalPort, externalPort, protocol, description, leaseDuration, isEnabled, remoteHost );
+				}
+			} );
+		}
+
+		public async Task DeletePortMapping(
+				int externalPort,
+				ProtocolType protocol = ProtocolType.Tcp,
+				string remoteHost = "" )
+		{
+			await ExecuteService( DeviceType.InternetGatewayDevice, ServiceType.WanIpConnection, async ( a, b ) =>
+			{
+				using (var serviceClient = new Core.Services.WanIpConnectionClient( a.Location.ToString(), b.ControlUrl, b.TypeName ))
+				{
+					await serviceClient.DeletePortMapping( externalPort, protocol, remoteHost );
 				}
 			} );
 		}

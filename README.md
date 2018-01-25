@@ -3,3 +3,5 @@
 ### 0.0.2 - WANIPConnection:
 - GetExternalIPAddress
 - AddPortMapping
+- DeletePortMapping
+- GetGenericPortMappingEntry

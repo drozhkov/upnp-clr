@@ -89,7 +89,7 @@ namespace AmberSystems.UPnP.Core.Types
 
 			if (tokens.Length < 2 || tokens.Length > 5)
 			{
-				throw new FormatUpnpException( s );
+				throw new FormatUpnpClrException( s );
 			}
 
 			if (tokens.Length == 2)
@@ -115,7 +115,7 @@ namespace AmberSystems.UPnP.Core.Types
 					}
 					else
 					{
-						throw new FormatUpnpException( s );
+						throw new FormatUpnpClrException( s );
 					}
 				}
 			}
@@ -143,12 +143,12 @@ namespace AmberSystems.UPnP.Core.Types
 				}
 				else
 				{
-					throw new FormatUpnpException( s );
+					throw new FormatUpnpClrException( s );
 				}
 			}
 			else
 			{
-				throw new FormatUpnpException( s );
+				throw new FormatUpnpClrException( s );
 			}
 
 			return result;

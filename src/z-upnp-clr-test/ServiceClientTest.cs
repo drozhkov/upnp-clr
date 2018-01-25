@@ -17,6 +17,9 @@
  */
 
 
+using System.Xml;
+using AmberSystems.UPnP.Core;
+using AmberSystems.UPnP.Core.Exceptions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace AmberSystems.UPnP.Test
@@ -24,6 +27,14 @@ namespace AmberSystems.UPnP.Test
 	[TestClass]
 	public class ServiceClientTest
 	{
+		class TestServiceClient : ServiceClient
+		{
+			public void TestHandleFault( XmlDocument doc )
+			{
+				HandleFault( doc );
+			}
+		}
+
 		[TestMethod]
 		public void ServiceResponseDeserialize()
 		{
@@ -51,6 +62,28 @@ namespace AmberSystems.UPnP.Test
 </p:PortMappingEntry>
 </p:PortMappingList>
 ";
+			xml = @"<s:Envelope xmlns:s=""http://schemas.xmlsoap.org/soap/envelope/"" s:encodingStyle=""http://schemas.xmlsoap.org/soap/encoding/"">
+<s:Body>
+<s:Fault>
+<faultcode>s:Client</faultcode>
+<faultstring>UPnPError</faultstring>
+<detail>
+<UPnPError xmlns=""urn:schemas-upnp-org:control-1-0"">
+<errorCode>402</errorCode>
+<errorDescription>Invalid Args</errorDescription>
+</UPnPError>
+</detail>
+</s:Fault>
+</s:Body>
+</s:Envelope>
+";
+
+			var doc = new XmlDocument();
+			doc.LoadXml( xml );
+
+			var client = new TestServiceClient();
+
+			var exception = Assert.ThrowsException<ServiceErrorUpnpClrException>( () => client.TestHandleFault( doc ) );
 		}
 	}
 }

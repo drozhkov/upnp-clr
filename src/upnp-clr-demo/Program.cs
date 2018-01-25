@@ -52,6 +52,30 @@ namespace AmberSystems.UPnP.Demo
 				Console.WriteLine( $"external address(es): {extAddrList.Aggregate( ( a, b ) => a + ", " + b )}" );
 
 				//client.AddPortMapping( 80, 81 ).Wait();
+				//client.DeletePortMapping( 81 ).Wait();
+
+				Console.WriteLine();
+				Console.WriteLine( "port mappings:" );
+
+				int index = 0;
+
+				while (true)
+				{
+					try
+					{
+						var portMappingList = client.GetGenericPortMappingEntry( index++ ).Result;
+
+						for (int i = 0; i < portMappingList.Count; i++)
+						{
+							var m = portMappingList[i];
+							Console.WriteLine( $"{m.RemoteHost}:{m.ExternalPort} -> {m.InternalHost}:{m.InternalPort} ({m.Description})" );
+						}
+					}
+					catch
+					{
+						break;
+					}
+				}
 			}
 			catch (Exception x)
 			{

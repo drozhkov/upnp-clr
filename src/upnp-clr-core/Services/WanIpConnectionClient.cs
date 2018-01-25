@@ -17,16 +17,43 @@
  */
 
 using System;
-using System.Net.Http;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace AmberSystems.UPnP.Core.Services
 {
-	public class WanIpConnectionClient : ServiceClient, IDisposable
+	public class WanIpConnectionClient : ServiceClient
 	{
-		protected HttpClient m_httpClient = new HttpClient();
+		public class PortMapping : XmlSerializable
+		{
+			public string RemoteHost { get; protected set; }
+			public int ExternalPort { get; protected set; }
+			public ProtocolType Protocol { get; protected set; }
+			public int InternalPort { get; protected set; }
+			public string InternalHost { get; protected set; }
+			public bool IsEnabled { get; protected set; }
+			public string Description { get; protected set; }
+			public TimeSpan LeaseDuration { get; protected set; }
 
+
+			public PortMapping()
+				: base( "PortMapping" )
+			{
+			}
+
+			public override void Deserialize( XmlNode node )
+			{
+				this.RemoteHost = node.SelectSingleNode( "NewRemoteHost" ).InnerXml;
+				this.ExternalPort = int.Parse( node.SelectSingleNode( "NewExternalPort" ).InnerXml );
+				this.Protocol = ToProtocolType( node.SelectSingleNode( "NewProtocol" ).InnerXml );
+				this.InternalPort = int.Parse( node.SelectSingleNode( "NewInternalPort" ).InnerXml );
+				this.InternalHost = node.SelectSingleNode( "NewInternalClient" ).InnerXml;
+				this.IsEnabled = int.Parse( node.SelectSingleNode( "NewEnabled" ).InnerXml ) == 1;
+				this.Description = node.SelectSingleNode( "NewPortMappingDescription" ).InnerXml;
+				this.LeaseDuration = TimeSpan.FromSeconds( int.Parse( node.SelectSingleNode( "NewLeaseDuration" ).InnerXml ) );
+			}
+		}
 
 		public WanIpConnectionClient( string host, string path, string serviceUrn )
 			: base( host, path, serviceUrn )
@@ -83,12 +110,49 @@ namespace AmberSystems.UPnP.Core.Services
 			var response = await m_httpClient.PostAsync( m_uri, content );
 			var responseContent = await response.Content.ReadAsByteArrayAsync();
 
-			var s = System.Text.Encoding.UTF8.GetString( responseContent );
+			ParseResponse( responseContent, actionName );
 		}
 
-		public void Dispose()
+		public async Task DeletePortMapping(
+				int externalPort,
+				ProtocolType protocol = ProtocolType.Tcp,
+				string remoteHost = "" )
 		{
-			m_httpClient.Dispose();
+			var actionName = "DeletePortMapping";
+
+			var args = new ServiceArgMap();
+			args
+				.Add( new XmlSerializable( "NewRemoteHost", remoteHost ) )
+				.Add( new XmlSerializable( "NewExternalPort", externalPort ) )
+				.Add( new XmlSerializable( "NewProtocol", ToProtocolName( protocol ) ) )
+				;
+
+			var content = GetContent( actionName, args );
+
+			var response = await m_httpClient.PostAsync( m_uri, content );
+			var responseContent = await response.Content.ReadAsByteArrayAsync();
+
+			ParseResponse( responseContent, actionName );
+		}
+
+		public async Task<PortMapping> GetGenericPortMappingEntry( int index )
+		{
+			var actionName = "GetGenericPortMappingEntry";
+
+			var args = new ServiceArgMap();
+			args
+				.Add( new XmlSerializable( "NewPortMappingIndex", index ) )
+				;
+
+			var content = GetContent( actionName, args );
+
+			var response = await m_httpClient.PostAsync( m_uri, content );
+			var responseContent = await response.Content.ReadAsByteArrayAsync();
+
+			var result = new PortMapping();
+			ParseResponse( responseContent, actionName, new ServiceArgMap().Add( result ) );
+
+			return result;
 		}
 	}
 }

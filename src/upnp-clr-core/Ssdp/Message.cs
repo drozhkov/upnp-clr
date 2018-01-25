@@ -89,7 +89,7 @@ namespace AmberSystems.UPnP.Core.Ssdp
 		{
 			if (type != TargetType.All && type != TargetType.RootDevice)
 			{
-				throw new ArgumentUpnpException();
+				throw new ArgumentUpnpClrException();
 			}
 
 			this.Target = new Target( type );
@@ -133,7 +133,7 @@ namespace AmberSystems.UPnP.Core.Ssdp
 		{
 			if (ts.TotalSeconds < 2)
 			{
-				throw new BadMxUpnpException();
+				throw new BadMxUpnpClrException();
 			}
 
 			return ((int)ts.TotalSeconds).ToString();

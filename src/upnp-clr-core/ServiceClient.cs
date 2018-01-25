@@ -19,11 +19,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Sockets;
 using System.Text;
 using System.Xml;
+
+using AmberSystems.UPnP.Core.Exceptions;
 
 namespace AmberSystems.UPnP.Core
 {
@@ -79,11 +80,17 @@ namespace AmberSystems.UPnP.Core
 		}
 	}
 
-	public abstract class ServiceClient
+	public abstract class ServiceClient : IDisposable
 	{
 		protected Uri m_uri;
 		protected string m_serviceUrn;
 
+		protected HttpClient m_httpClient = new HttpClient();
+
+
+		protected ServiceClient()
+		{
+		}
 
 		public ServiceClient( string host, string path, string serviceUrn )
 		{
@@ -140,14 +147,38 @@ namespace AmberSystems.UPnP.Core
 			return content;
 		}
 
-		protected void ParseResponse( byte[] body, string actionName, ServiceArgMap argValues )
+		protected void HandleFault( XmlDocument doc )
+		{
+			var node = doc.SelectSingleNode( "/*[local-name()='Envelope']/*[local-name()='Body']/*[local-name()='Fault']" );
+
+			if (node != null)
+			{
+				node = node.SelectSingleNode( "./detail/*[local-name()='UPnPError']/*[local-name()='errorCode']" );
+
+				if (node != null)
+				{
+					throw new ServiceErrorUpnpClrException( int.Parse( node.InnerXml ) );
+				}
+
+				throw new ServiceFaultUpnpClrException( doc.InnerXml );
+			}
+		}
+
+		protected void ParseResponse( byte[] body, string actionName, ServiceArgMap argValues = null )
 		{
 			XmlDocument doc = new XmlDocument();
 			doc.LoadXml( Encoding.UTF8.GetString( body ) );
 
-			foreach (var argValueName in argValues.Keys.ToArray())
+			var node = doc.SelectSingleNode( $"//*[local-name()='{actionName}Response']" );
+
+			if (node == null)
 			{
-				var node = doc.SelectSingleNode( $"//*[local-name()='{actionName}Response']" );
+				HandleFault( doc );
+				throw new ServiceFaultUpnpClrException( doc.InnerXml );
+			}
+
+			if (argValues != null)
+			{
 				argValues.Deserialize( node );
 			}
 		}
@@ -165,6 +196,26 @@ namespace AmberSystems.UPnP.Core
 				default:
 					return "?PROTO";
 			}
+		}
+
+		public static ProtocolType ToProtocolType( string protocolName )
+		{
+			switch (protocolName.ToLower())
+			{
+				case "tcp":
+					return ProtocolType.Tcp;
+
+				case "udp":
+					return ProtocolType.Udp;
+
+				default:
+					return ProtocolType.Unknown;
+			}
+		}
+
+		public virtual void Dispose()
+		{
+			m_httpClient.Dispose();
 		}
 	}
 }
