@@ -21,6 +21,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 
@@ -40,9 +41,9 @@ namespace AmberSystems.UPnP
 			public bool IsEmpty { get { return m_resultMap.IsEmpty; } }
 
 
-			public void Add( IPAddress address, byte[] response, IPEndPoint remoteEp )
+			public void Add( IPAddress address, byte[] response, System.Net.EndPoint remoteEp )
 			{
-				var result = Message.Parse( response, remoteEp, address );
+				var result = Message.Parse( response, remoteEp as IPEndPoint, address );
 
 				if (result != null)
 				{
@@ -82,10 +83,11 @@ namespace AmberSystems.UPnP
 		public async Task<DiscoveryResult> Discover( TargetType targetType = TargetType.All, short ttl = 2 )
 		{
 			List<IPAddress> addressList = new List<IPAddress>();
-			addressList.AddRange( Dns.GetHostEntryAsync( Dns.GetHostName() )
-				.Result
-				.AddressList
-				.Where( a => a.AddressFamily == AddressFamily.InterNetwork ) );
+			addressList.AddRange( NetworkInterface.GetAllNetworkInterfaces()
+				.Where( a => a.NetworkInterfaceType != NetworkInterfaceType.Loopback && a.OperationalStatus == OperationalStatus.Up )
+				.SelectMany( a => a.GetIPProperties().UnicastAddresses )
+				.Where( a => a.Address.AddressFamily == AddressFamily.InterNetwork )
+				.Select( a => a.Address ) );
 
 			var message = new Message( MessageType.Search )
 				.Mx( TimeSpan.FromSeconds( 3 ) )
@@ -98,33 +100,39 @@ namespace AmberSystems.UPnP
 
 			foreach (var a in addressList)
 			{
-				var task = Task.Run( () =>
+				var task = Task.Run( async () =>
 				{
-					using (var client = new UdpClient( new IPEndPoint( a, 0 ) ))
+					using (var client = new Socket( AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp ))
 					{
 						client.Ttl = ttl;
+						client.SetSocketOption( SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true );
+						client.Bind( new IPEndPoint( a, 0 ) );
 
-						client.SendAsync( messageBin, messageBin.Length, message.Host );
-						client.SendAsync( messageBin, messageBin.Length, message.Host );
+						var bufferIn = new ArraySegment<byte>( new byte[2048] );
+						var receiveTask = client.ReceiveFromAsync( bufferIn, SocketFlags.None, new IPEndPoint( IPAddress.Any, 0 ) );
+
+						ArraySegment<byte> bufferOut = new ArraySegment<byte>( messageBin );
+						client.SendTo( bufferOut.Array, message.Host );
+						client.SendTo( bufferOut.Array, message.Host );
 
 						while (true)
 						{
-							var receiveTask = client.ReceiveAsync();
-
 							if (!receiveTask.Wait( (int)(message.Mx().TotalMilliseconds * ttl) ))
 							{
 								return;
 							}
 
-							var taskResult = receiveTask.Result;
+							var taskResult = await receiveTask;
 
 							try
 							{
-								result.Add( a, taskResult.Buffer, taskResult.RemoteEndPoint );
+								result.Add( a, bufferIn.Take( taskResult.ReceivedBytes ).ToArray(), taskResult.RemoteEndPoint );
 							}
 							catch (Exception x)
 							{
 							}
+
+							receiveTask = client.ReceiveFromAsync( bufferIn, SocketFlags.None, new IPEndPoint( IPAddress.Any, 0 ) );
 						}
 					}
 				} );
