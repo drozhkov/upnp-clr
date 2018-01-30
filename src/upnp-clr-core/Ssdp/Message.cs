@@ -44,11 +44,11 @@ namespace AmberSystems.UPnP.Core.Ssdp
 		protected TimeSpan m_mx;
 
 
-		public Message( MessageType type = MessageType.Search )
+		public Message( IPEndPoint host, MessageType type = MessageType.Search )
 		{
 			m_type = type;
 
-			this.Host = EndPoint.SiteLocal;
+			this.Host = host;
 		}
 
 		public static Message Parse( byte[] data, IPEndPoint sourceAddress, IPAddress localAddress )
@@ -59,9 +59,8 @@ namespace AmberSystems.UPnP.Core.Ssdp
 
 			if (httpMessage.ResponseCode != 0)
 			{
-				result = new Message( MessageType.Response );
+				result = new Message( sourceAddress, MessageType.Response );
 				result.LocalAddress = localAddress;
-				result.Host = sourceAddress;
 				result.Target = Target.Parse( httpMessage.GetHeaderValue( Net.Http.Header.Name.St ) );
 				result.Location = new Uri( httpMessage.GetHeaderValue( Net.Http.Header.Name.Location ) );
 			}

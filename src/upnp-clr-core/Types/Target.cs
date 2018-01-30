@@ -18,6 +18,7 @@
 
 using System;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
@@ -159,9 +160,9 @@ namespace AmberSystems.UPnP.Core.Types
 			using (var httpClient = new HttpClient())
 			{
 				var response = await httpClient.GetAsync( location );
-				var responseContent = await response.Content.ReadAsStringAsync();
+				var responseContent = await response.Content.ReadAsByteArrayAsync();
 
-				return Serializable.Deserialize<T>( responseContent );
+				return Serializable.Deserialize<T>( Encoding.UTF8.GetString( responseContent ) );
 			}
 		}
 

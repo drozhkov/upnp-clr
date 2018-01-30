@@ -86,14 +86,8 @@ namespace AmberSystems.UPnP
 			addressList.AddRange( NetworkInterface.GetAllNetworkInterfaces()
 				.Where( a => a.NetworkInterfaceType != NetworkInterfaceType.Loopback && a.OperationalStatus == OperationalStatus.Up )
 				.SelectMany( a => a.GetIPProperties().UnicastAddresses )
-				.Where( a => a.Address.AddressFamily == AddressFamily.InterNetwork )
+				.Where( a => a.Address.AddressFamily == AddressFamily.InterNetwork || a.Address.AddressFamily == AddressFamily.InterNetworkV6 )
 				.Select( a => a.Address ) );
-
-			var message = new Message( MessageType.Search )
-				.Mx( TimeSpan.FromSeconds( 3 ) )
-				.St( targetType );
-
-			var messageBin = message.ToByteArray();
 
 			DiscoveryResult result = new DiscoveryResult();
 			List<Task> tasks = new List<Task>();
@@ -102,18 +96,37 @@ namespace AmberSystems.UPnP
 			{
 				var task = Task.Run( async () =>
 				{
-					using (var client = new Socket( AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp ))
+					var dstAddress = a.AddressFamily == AddressFamily.InterNetwork
+						? Core.Ssdp.EndPoint.SiteLocal
+							: a.AddressFamily == AddressFamily.InterNetworkV6
+								? Core.Ssdp.EndPoint.SiteLocalV6
+									: null;
+
+					var message = new Message( dstAddress, MessageType.Search )
+						.Mx( TimeSpan.FromSeconds( 3 ) )
+						.St( targetType );
+
+					var messageBin = message.ToByteArray();
+
+					using (var client = new Socket( a.AddressFamily, SocketType.Dgram, ProtocolType.Udp ))
 					{
 						client.Ttl = ttl;
 						client.SetSocketOption( SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true );
 						client.Bind( new IPEndPoint( a, 0 ) );
 
 						var bufferIn = new ArraySegment<byte>( new byte[2048] );
-						var receiveTask = client.ReceiveFromAsync( bufferIn, SocketFlags.None, new IPEndPoint( IPAddress.Any, 0 ) );
 
-						ArraySegment<byte> bufferOut = new ArraySegment<byte>( messageBin );
-						client.SendTo( bufferOut.Array, message.Host );
-						client.SendTo( bufferOut.Array, message.Host );
+						var remoteEp = a.AddressFamily == AddressFamily.InterNetwork
+							? new IPEndPoint( IPAddress.Any, 0 )
+								: a.AddressFamily == AddressFamily.InterNetworkV6
+									? new IPEndPoint( IPAddress.IPv6Any, 0 )
+										: null;
+
+						var receiveTask = client.ReceiveFromAsync( bufferIn, SocketFlags.None, remoteEp );
+
+						var bufferOut = new ArraySegment<byte>( messageBin );
+						client.SendTo( bufferOut.Array, dstAddress );
+						client.SendTo( bufferOut.Array, dstAddress );
 
 						while (true)
 						{
@@ -132,7 +145,7 @@ namespace AmberSystems.UPnP
 							{
 							}
 
-							receiveTask = client.ReceiveFromAsync( bufferIn, SocketFlags.None, new IPEndPoint( IPAddress.Any, 0 ) );
+							receiveTask = client.ReceiveFromAsync( bufferIn, SocketFlags.None, remoteEp );
 						}
 					}
 				} );

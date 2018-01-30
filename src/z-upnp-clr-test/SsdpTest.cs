@@ -33,7 +33,7 @@ namespace AmberSystems.UPnP.Test
 		[TestMethod]
 		public void SsdpMessageCreate()
 		{
-			var msg = new Message( MessageType.Search );
+			var msg = new Message( Core.Ssdp.EndPoint.SiteLocal, MessageType.Search );
 
 			Assert.ThrowsException<BadMxUpnpClrException>( () =>
 			{
