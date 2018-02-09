@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>    
-    <TargetFramework>netcoreapp2.0</TargetFramework>    
-    <RootNamespace>AmberSystems.UPnP.Test</RootNamespace>    
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <RootNamespace>AmberSystems.UPnP.Test</RootNamespace>
     <AssemblyName>upnp-clr-test</AssemblyName>
   </PropertyGroup>
 
@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\upnp-clr-core\upnp-clr-core.csproj" />
+    <ProjectReference Include="..\..\src\upnp-clr-core\upnp-clr-core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

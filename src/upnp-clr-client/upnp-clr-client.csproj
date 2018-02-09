@@ -1,17 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Copyright>2016 Denis Rozhkov &lt;denis@rozhkoff.com&gt;</Copyright>
+    <Copyright>2016 Denis Rozhkov</Copyright>
     <VersionPrefix>0.0.2</VersionPrefix>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>upnp-clr-client</AssemblyName>
     <PackageId>upnp-clr-client</PackageId>
     <RootNamespace>AmberSystems.UPnP</RootNamespace>
     <AssemblyVersion>0.0.2</AssemblyVersion>
-    <Description />
+    <Description>UPnP .NET client</Description>
     <Authors>Denis Rozhkov &lt;denis@rozhkoff.com&gt;</Authors>
-    <Company />
+    <Company>Amber Systems</Company>
     <Product>UPnP/CLR Client</Product>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageProjectUrl>https://github.com/drozhkov/upnp-clr</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/drozhkov/upnp-clr</RepositoryUrl>
+    <PackageTags>upnp, ssdp</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
