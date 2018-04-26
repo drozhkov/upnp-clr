@@ -110,7 +110,11 @@ namespace AmberSystems.UPnP
 
 					using (var client = new Socket( a.AddressFamily, SocketType.Dgram, ProtocolType.Udp ))
 					{
-						client.Ttl = ttl;
+						if (a.AddressFamily == AddressFamily.InterNetwork)
+						{
+							client.Ttl = ttl;
+						}
+
 						client.SetSocketOption( SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true );
 						client.Bind( new IPEndPoint( a, 0 ) );
 
