@@ -37,7 +37,7 @@ namespace AmberSystems.UPnP.Core.Net.Http
 
 	public class Headers : HttpHeaders
 	{
-		protected Regex s_regexHeader = new Regex( @"^([^:]+):\s*(\S*)" );
+		protected Regex s_regexHeader = new Regex( @"^([^:]+):\s*(.*)" );
 
 		public void ParseAndAdd( string s )
 		{
@@ -45,7 +45,12 @@ namespace AmberSystems.UPnP.Core.Net.Http
 
 			if (regexMatch.Success)
 			{
-				Add( regexMatch.Groups[1].Value.Trim(), regexMatch.Groups[2].Value.Trim() );
+				var name = regexMatch.Groups[1].Value.Trim().ToUpper();
+
+				if (name == Header.Name.St || name == Header.Name.Location)
+				{
+					Add( regexMatch.Groups[1].Value.Trim(), regexMatch.Groups[2].Value.Trim() );
+				}
 			}
 		}
 

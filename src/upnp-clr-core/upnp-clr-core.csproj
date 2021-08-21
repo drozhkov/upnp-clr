@@ -17,6 +17,9 @@
     <RepositoryType></RepositoryType>
     <PackageTags>upnp, ssdp</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>upnp.pfx</AssemblyOriginatorKeyFile>
+    <DelaySign>false</DelaySign>
   </PropertyGroup>
 
 </Project>
